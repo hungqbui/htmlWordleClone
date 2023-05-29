@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Wordle Clone</title>
+</head>
+<body>
+    <div id="block-cluster"></div>
+    <div class="buttonDiv" id="retry-btn-div"></div>
+
+</body>
+
+<script>
+    let wordList
+    let word
+    let maxGuesses
+    let userGuess = 0
+
+    const siteInit = () => {
+        fetch('words.txt').then((response) => {
+            return response.text()
+        })
+        .then((data) => {
+            wordList = data.split('\n')
+            ranIndex = Math.floor(Math.random() * wordList.length)
+            word = wordList[ranIndex]
+            console.log(word)
+            maxGuesses = word.length + 1
+
+            for (let i = 0; i <= word.length; i++) {
+                cluster = document.getElementById("block-cluster")
+                rowDiv = document.createElement('div')
+                rowDiv.setAttribute('class', 'block-row')
+
+                for (let j = 0; j < word.length; j++) {
+                    blockDiv = document.createElement('div')
+                    blockDiv.setAttribute('class', 'block')
+                    blockDiv.setAttribute('id', j + 1 + '-block-' + (i+1) + '-row')
+                    rowDiv.append(blockDiv)
+                }
+            
+                cluster.appendChild(rowDiv)
+            }
+
+        })
+
+    }
+    
+
+    window.addEventListener('load', siteInit)
+    
+    const getFirstEmptyBlock = () => {
+        for (let i = 0; i < word.length; i++) {
+            cur = document.getElementById(i + 1 + "-block-" + (userGuess + 1) + '-row')
+            if (!cur.innerText) {
+                return cur
+            }
+        }
+        return undefined
+    }
+    const getFirstTextBlock = () => {
+        for (let i = 0; i < word.length; i++) {
+            cur = document.getElementById(i + 1 + "-block-" + (userGuess + 1) + '-row')
+            if (!cur.innerText) {
+                return document.getElementById(i + "-block-" + (userGuess + 1) + '-row')
+            }
+        }
+        return document.getElementById(5 + "-block-" + (userGuess + 1) + '-row')
+    }
+
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key == "Enter") {
+            retryButton = document.createElement('button')
+            retryButton.innerText = 'Retry'
+            retryButton.setAttribute('id', 'retry-btn')
+            retryButton.onclick = () => {
+                window.location.reload()
+            }
+            buttonDiv = document.getElementById('retry-btn-div')
+
+            if (userGuess == maxGuesses - 1) {
+                buttonDiv.append(retryButton)
+                return
+            }
+
+            let trueCounter = 0;
+            for (let i = 0; i < word.length; i++) {
+                cur = document.getElementById(i + 1 + "-block-" + (userGuess + 1) + '-row')
+                letter = cur.innerText.toLowerCase()
+
+                if (letter == word[i]) {
+                    cur.style.backgroundColor = 'green'
+                    trueCounter++
+                } else if (word.includes(letter)) {
+                    cur.style.backgroundColor = 'orange'
+                }
+            }
+        
+            if (trueCounter == 5) {
+                buttonDiv.append(retryButton)
+                return
+            }
+
+            userGuess++
+            return
+        }
+
+        if (event.key == "Backspace") {
+            temp = getFirstTextBlock()
+            console.log(temp.innerText)
+            if (temp) {
+                temp.innerText = ''
+                console.log(temp.innerText)
+            }
+            return
+        }
+
+        current = getFirstEmptyBlock()
+        if (current) current.innerText = event.key.toUpperCase()
+
+    })
+
+
+</script>
+
+</html>
