@@ -27,7 +27,7 @@
             wordList = data.split('\n')
             ranIndex = Math.floor(Math.random() * wordList.length)
             word = wordList[ranIndex]
-            console.log(word)
+
             maxGuesses = word.length + 1
 
             for (let i = 0; i <= word.length; i++) {
@@ -111,10 +111,8 @@
 
         if (event.key == "Backspace") {
             temp = getFirstTextBlock()
-            console.log(temp.innerText)
             if (temp) {
                 temp.innerText = ''
-                console.log(temp.innerText)
             }
             return
         }
